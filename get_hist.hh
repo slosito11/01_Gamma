@@ -61,7 +61,7 @@ TH1D *getCleanHistoFromTree(const char *name_file, int numBins, double minX,
     h_back_0->Reset();
     h_back_0->Add(h_back1_0, h_back2_0, 0.5, 0.5);
     h_spectrum->Add(h_back_0, -1);
-    CalibrateHisto(h_spectrum, 0.41, -65.62);
+//    CalibrateHisto(h_spectrum, 0.41, -65.62);
   } else if (channel == 1) {
     // avreage of backgrounds of channel 1
     TH1D *h_back1_1 =
@@ -74,7 +74,7 @@ TH1D *getCleanHistoFromTree(const char *name_file, int numBins, double minX,
     h_back_1->Reset();
     h_back_1->Add(h_back1_1, h_back2_1, 0.5, 0.5);
     h_spectrum->Add(h_back_1, -1);
-    CalibrateHisto(h_spectrum, 0.23, -21.63);
+//    CalibrateHisto(h_spectrum, 0.23, -21.63);
   }
   // changing title
   h_spectrum->SetTitle("Cleaned spectrum");

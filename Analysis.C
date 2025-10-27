@@ -66,7 +66,36 @@ TH1D *h_sodio_0 =
     getHistoFromTree("./data/Sodio/RAW/DataR_Sodio.root", 3200, 400, 3600, 0);
 TH1D *h_sodio_1 =
     getHistoFromTree("./data/Sodio/RAW/DataR_Sodio.root", 3200, 400, 3600, 1);
-*/
+		17300, 0, 17300, 0);
+*/ 
+cout << endl
+     << "======================== Canisters ========================"
+     << endl;
+
+TH1D *ch_show = getCleanHistoFromTree("./data/Not_Exposed_Canister/RAW/DataR_Not_Exposed_Canister.root",
+		11600, 200, 11800, 1);
+
+TH1D *ch_nexp_can_0 = getCleanHistoFromTree("./data/Not_Exposed_Canister/RAW/DataR_Not_Exposed_Canister.root",
+		6500, 500, 7000, 0);
+TH1D *ch_nexp_can_1 = getCleanHistoFromTree("./data/Not_Exposed_Canister/RAW/DataR_Not_Exposed_Canister.root",
+		11600, 200, 11800, 1);
+
+TH1D *ch_exp_can_0 = getCleanHistoFromTree("./data/Exposed_Canister/RAW/DataR_Exposed_Canister.root",
+		2860, 140, 3000, 0);
+TH1D *ch_exp_can_1 = getCleanHistoFromTree("./data/Exposed_Canister/RAW/DataR_Exposed_Canister.root",
+		7100, 200, 7300, 1);
+
+TH1D *ch_cal_can_0 = getCleanHistoFromTree("./data/Calibrated_Canister/RAW/DataR_Calibrated_Canister.root",
+		5500, 500, 6000, 0);
+TH1D *ch_cal_can_1 = getCleanHistoFromTree("./data/Calibrated_Canister/RAW/DataR_Calibrated_Canister.root",
+		7100, 200, 7300, 1);
+
+
+
+/* /
+cout << endl
+     << "======================== RADIOACTIVE MATERIAL ========================"
+     << endl;
 TH1D *ch_europio_0 = getCleanHistoFromTree("./data/Europio/RAW/DataR_Europio.root",
 		3450, 550, 4000, 0);
 TH1D *ch_europio_1 = getCleanHistoFromTree("./data/Europio/RAW/DataR_Europio.root",
@@ -96,7 +125,15 @@ TH1D *ch_sodio_1 = getCleanHistoFromTree("./data/Sodio/RAW/DataR_Sodio.root",
 		3200, 400, 3600, 1);
                                       //2290, 10, 2300, 1);
                                       //   3200, 400, 3600, 1);
-/*/
+//*/
+//*/
+
+cout << endl
+     << "==================== FINISHED CREATING HISTOGRAMS ===================="
+     << endl
+     << "======================== ANALYSIS AND PLOTTING ========================"
+     << endl;
+
 
 TCanvas *c_show = new TCanvas("Show test");
 c_show->SetGridx();
@@ -105,26 +142,14 @@ c_show->GetFrame()->SetFillColor(21);
 c_show->GetFrame()->SetBorderMode(-1);
 c_show->GetFrame()->SetBorderSize(5);
 
-//TF1 *fitamericio0 = new TF1("americio0", "gaus(0)", 0, 1200);
-
-//ch_americio_0->Fit("americio0", "R");
-
-ch_sodio_0->SetTitle(" test ");
-ch_sodio_0->SetName("americio spectrum");
+ch_show->SetTitle(" test ");
+ch_show->SetName("americio spectrum");
 
 gStyle->SetOptFit(0111);
 gStyle->SetOptStat(11);
-ch_sodio_0->Draw();
+ch_show->Draw();
 c_show->Update();
-*/
-
-cout << endl
-     << "==================== FINISHED CREATING HISTOGRAMS ===================="
-     << endl
-     << "======================== ANALYSIS AND PLOTTING ========================"
-     << endl;
-
-//*/
+/* /
 cout << endl
      << "======================== RADIOACTIVE MATERIAL ========================"
      << endl;
@@ -179,7 +204,7 @@ fiteuropio0p8->Draw("SAME");//GetParameters(&eur_par_0[21]);
 eur_tot_0->SetParameters(eur_par_0);
 
 //ch_europio_0->Fit("eur_tot_0", "R+");
-//*/
+//* /
 
 
 ch_europio_0->SetTitle("europio spectrum via NaI detector");
@@ -190,7 +215,7 @@ gStyle->SetOptStat(11);
 //ch_europio_0->Draw();
 c_europio_0->Update();
 //c_europio_0->SaveAs("plots/europio_0.png");
-//*/
+//* /
 cout << endl
      << "\t\t==================== ch 1 ===================="
      << endl;
@@ -236,7 +261,7 @@ ch_europio_1->Fit("europio1_p10", "R");
 ch_europio_1->Fit("europio1_p11", "R");
 ch_europio_1->Fit("europio1_p12", "R");
 ch_europio_1->Fit("europio1_p13", "R");
-//*/
+//* /
 fiteuropio1p0->Draw("SAME");
 fiteuropio1p01->Draw("SAME");
 fiteuropio1p1->Draw("SAME");//GetParameters(&eur_par_1[0]);
@@ -252,11 +277,11 @@ fiteuropio1p10->Draw("SAME");
 fiteuropio1p11->Draw("SAME");//GetParameters(&eur_par_1[21]);
 fiteuropio1p12->Draw("SAME");
 fiteuropio1p13->Draw("SAME");
-/*
+//*
 eur_tot_0->SetParameters(eur_par_1);
 
 //ch_europio_1->Fit("eur_tot_1", "R+");
-*/
+* /
 ch_europio_1->SetTitle("europio spectrum via HPGe detector");
 ch_europio_1->SetName("europio spectrum");
 
