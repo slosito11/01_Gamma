@@ -6,6 +6,7 @@ Root analysis files of the data taken during the gamma ray experiment of 1st yea
 the directory from which you launch root should look like this:
 ```
 ├── Analysis.C
+├── Analysis.py
 ├── getHist.hh
 ├── other.hh files 
 └── data
