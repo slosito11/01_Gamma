@@ -10,13 +10,13 @@ struct slimport_data_t {
   UInt_t Flags;
 };
 
-int *CalibrateHisto(TH1D *h_uncal, float m,
-                     float q) { // Re-scaling of axis, as in the slides
+int *CalibrateHisto(TH1D *h_uncal, float m, float q, double numBins,
+                    double minX,
+                    double maxX) { // Re-scaling of axis, as in the slides
 
-  int max_bin = h_uncal->GetNbinsX(); // This method returns the number of bins
-                                      // in x of the histogram
-  float max_kev = h_uncal->GetBinCenter(max_bin) * m + q;
-  h_uncal->GetXaxis()->SetLimits(q, max_kev);
+  float max_kev = maxX * m + q;
+  float min_kev = minX * m + q;
+  h_uncal->GetXaxis()->SetLimits(min_kev, max_kev);
   if (m != 1 && q != 0) // This means that I actually changed the calibration!
     h_uncal->SetXTitle("keV");
   return 0;
@@ -37,9 +37,10 @@ TH1D *getHistoFromTree(const char *name_file, int numBins, double minX,
   for (int i = 0; i < intree->GetEntries(); i++) {
     intree->GetEntry(i);
     if (indata.Channel == channel) {
-      h_spectrum->Fill(indata.Energy * 2. + 100.);
+      h_spectrum->Fill(indata.Energy);
     }
   }
+
   // return
   return h_spectrum;
 }
@@ -61,7 +62,9 @@ TH1D *getCleanHistoFromTree(const char *name_file, int numBins, double minX,
     h_back_0->Reset();
     h_back_0->Add(h_back1_0, h_back2_0, 0.5, 0.5);
     h_spectrum->Add(h_back_0, -1);
-//    CalibrateHisto(h_spectrum, 0.41, -65.62);
+    TH1D *h_bg_0 = (TH1D *)h_spectrum->ShowBackground(22); // draws...
+    h_spectrum->Add(h_bg_0, -1);
+    CalibrateHisto(h_spectrum, 0.824364, -25.84, numBins, minX, maxX);
   } else if (channel == 1) {
     // avreage of backgrounds of channel 1
     TH1D *h_back1_1 =
@@ -74,8 +77,11 @@ TH1D *getCleanHistoFromTree(const char *name_file, int numBins, double minX,
     h_back_1->Reset();
     h_back_1->Add(h_back1_1, h_back2_1, 0.5, 0.5);
     h_spectrum->Add(h_back_1, -1);
-//    CalibrateHisto(h_spectrum, 0.23, -21.63);
+    TH1D *h_bg_1 = (TH1D *)h_spectrum->ShowBackground(22); // draws...
+    h_spectrum->Add(h_bg_1, -1);
+    CalibrateHisto(h_spectrum, 0.462430, 0.17, numBins, minX, maxX);
   }
+
   // changing title
   h_spectrum->SetTitle("Cleaned spectrum");
   // h_spectrum->Sumw2();
