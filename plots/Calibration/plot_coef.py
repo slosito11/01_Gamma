@@ -1,42 +1,98 @@
+# import matplotlib.pyplot as plt
+# import numpy as np
+# import polars as pl
+#
+# import ROOT as rt
+#
+# get the data
+# data = pl.read_csv("calib_coef")
+#
+# NaI_fit = np.polynomial.polynomial.polyfit(
+#    data["cNaI"], data["E"], 1, full=True)  # 1 means linear
+# HPGe_fit = np.polynomial.polynomial.polyfit(
+#    data["cHPGe"], data["E"], 1,  full=True)  # 1 means linear
+#
+# print("Sodium detector scale : ", NaI_fit)
+# print("Germanium detector scale : ", HPGe_fit)
+#
+# plt.errorbar(data["cNaI"], data["E"], xerr=data["dcNaI"], fmt="bx", capsize = 10)
+# plt.errorbar(data["cHPGe"], data["E"], xerr=data["dcHPGe"], fmt="rx", capsize = 10)
+#
+# print(NaI_fit[0])
+#
+# plt.plot(data["cNaI"], data["cNaI"]*NaI_fit[0][1]+NaI_fit[0][0],
+#         "-b", label=f"NaI fit : {NaI_fit[0][1]: .2f}x{NaI_fit[0][0]: .2f}")
+# plt.plot(data["cHPGe"], data["cHPGe"]*HPGe_fit[0]
+#         [1]+HPGe_fit[0][0], "-r", label=f"HPGe fit : {HPGe_fit[0][1]: .2f}x{HPGe_fit[0][0]: .2f}")
+#
+#
+# plt.yticks([511, 600, 800, 1000, 1173, 1200, 1332], [r'$^{60}co$', 600, 800, 1000,r'$^{22}Na$', 1200, r'$^{22}Na$'])
+# plt.axline((0, NaI_fit[0][0]), slope=NaI_fit[0][1], label="NaI fit")
+# plt.axline((0, HPGe_fit[0][0]), slope=HPGe_fit[0][1], label="HPGe fit", c = "red")
+#
+#
+# make it nice
+# plt.title("Channel vs Energy")
+# plt.xlabel("Bin [/]")
+# plt.ylabel("Energy [keV]")
+# plt.legend()
+#
+#
+# show it
+# plt.show()
+
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
-
-# import ROOT as rt
+from scipy.optimize import curve_fit
 
 # get the data
 data = pl.read_csv("calib_coef")
-
-NaI_fit = np.polynomial.polynomial.polyfit(
-    data["cNaI"], data["E"], 1, full=True)  # 1 means linear
-HPGe_fit = np.polynomial.polynomial.polyfit(
-    data["cHPGe"], data["E"], 1,  full=True)  # 1 means linear
-
-print("Sodium detector scale : ", NaI_fit)
-print("Germanium detector scale : ", HPGe_fit)
-
-plt.errorbar(data["cNaI"], data["E"], xerr=data["dcNaI"], fmt="bx", capsize = 10)
-plt.errorbar(data["cHPGe"], data["E"], xerr=data["dcHPGe"], fmt="rx", capsize = 10)
-
-#print(NaI_fit[0])
-
-plt.plot(data["cNaI"], data["cNaI"]*NaI_fit[0][1]+NaI_fit[0][0],
-         "-b", label=f"NaI fit : {NaI_fit[0][1]: .2f}x{NaI_fit[0][0]: .2f}")
-plt.plot(data["cHPGe"], data["cHPGe"]*HPGe_fit[0]
-         [1]+HPGe_fit[0][0], "-r", label=f"HPGe fit : {HPGe_fit[0][1]: .2f}x{HPGe_fit[0][0]: .2f}")
+# print(data.to_numpy())
 
 
-plt.yticks([511, 600, 800, 1000, 1173, 1200, 1332], [r'$^{60}co$', 600, 800, 1000,r'$^{22}Na$', 1200, r'$^{22}Na$'])
-# plt.axline((0, NaI_fit[0][0]), slope=NaI_fit[0][1], label="NaI fit")
-# plt.axline((0, HPGe_fit[0][0]), slope=HPGe_fit[0][1], label="HPGe fit", c = "red")
+# fit func
+def Eff_fit(x, a, b):
+    return a * x + b
 
+
+N_popt, N_pcov = curve_fit(
+    Eff_fit, data["cNaI"].to_numpy(), data["E"].to_numpy(), nan_policy="omit"
+)
+H_popt, H_pcov = curve_fit(Eff_fit, data["cHPGe"], data["E"])
+
+plt.plot(
+    np.arange(600, 1750),
+    Eff_fit(np.arange(600, 1750), *N_popt),
+    "-r",
+    label=f"NaI : {N_popt[0]: .6f}x+{N_popt[1]: .2f}",
+)
+plt.plot(
+    np.arange(100, 3000),
+    Eff_fit(np.arange(100, 3000), *H_popt),
+    "-b",
+    label=f"HPGe : {H_popt[0]: .6f}x{H_popt[1]: .2f}",
+)
+# make the plot
+plt.plot(data["cNaI"], data["E"], "rx")
+plt.plot(data["cHPGe"], data["E"], "bx")
 
 # make it nice
-plt.title("Channel vs Energy")
-plt.xlabel("Bin [/]")
-plt.ylabel("Energy [keV]")
+plt.title("Energy vs ADC channel")
+plt.ylabel("Energy [KeV]")
+plt.xlabel("ADC channel")
+plt.yticks(
+    [59.5, 511, 1173, 1274.5, 1332],
+    [
+        r"$^{241}Am$ 59.5",
+        r"$^{22}Na$ 511",
+        r"$^{60}co$ 1173",
+        r"$^{22}Na$ 1274.5",
+        r"$^{22}Na$ 1332",
+    ],
+)
+plt.grid(True, axis="y")
 plt.legend()
-
 
 # show it
 plt.show()
